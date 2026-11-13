@@ -1776,7 +1776,10 @@ window.GZ={"robot":"H4sIAAAAAAAC/1TdWXPyvJYF4P9ybt1Vygz0nYDMhEiEuasvmCTmIYAV0n++
   });
   const endDrag = () => { if (!dragging) return; dragging = false; split.classList.remove('drag'); document.body.classList.remove('dragging'); try { localStorage.setItem(isMob() ? 'shopPh' : 'shopPw', parseInt(getComputedStyle(rootEl).getPropertyValue(isMob() ? '--ph' : '--pw'))); } catch (e) {} };
   split.addEventListener('pointerup', endDrag); split.addEventListener('pointercancel', endDrag);
-  setView('iso');
+  // стартовый вид при открытии: взгляд на цех с высоты ~5 м от правого переднего угла (на узком экране — подальше)
+  views.start = { p: K(22, -13.5, 5), t: K(8.5, -2.5, 1.5) };
+  setView('start');
+  if (camera.aspect < 1) { camera.position.sub(controls.target).multiplyScalar(1.6).add(controls.target); controls.update(); }
 
   // стартовая сцена: три робота печатают
   const START = [[13, '92', 0.35], [7, '100', 0.6], [19, '90', 0.15], [3, '99', 0.0]];
