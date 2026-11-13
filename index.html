@@ -21,7 +21,7 @@
   .pbar i.run { background:linear-gradient(90deg,#1f9e4a,#34c759); } .pbar i.pause { background:#ffb020; } .pbar i.done { background:#34c759; }
   .mts { flex:1 1 420px; min-width:0; display:flex; align-items:center; gap:12px; }
   .mt { flex:1 1 0; min-width:0; display:flex; align-items:center; gap:8px; }
-  .mtl { flex:none; color:#9aa0a6; font-size:12px; white-space:nowrap; }
+  .mtl { flex:none; color:#e6e8eb; font-size:12px; font-weight:700; white-space:nowrap; }
   .pbar.big { position:relative; height:19px; min-width:0; border-radius:10px; background:rgba(255,255,255,.1); box-shadow:inset 0 0 0 1px rgba(255,255,255,.05); }
   .pbar.big i { border-radius:10px; min-width:0; }
   .pbar.big i.tm { background:#0a84ff; }
@@ -49,7 +49,14 @@
   button:hover { border-color:#0a84ff; }
   #panel { box-sizing:border-box; position:absolute; right:0; top:0; bottom:0; width:var(--pw); background:rgba(24,26,30,.94); border-left:1px solid #33363c; display:flex; flex-direction:column; }
   #panel h2 { margin:0; padding:12px 14px 6px; font-size:15px; }
-  #speed { border-color:#0a84ff; }
+  #speed { display:none; }
+  .grp.sp { position:relative; }
+  .spb { border-color:#0a84ff !important; min-width:62px; justify-content:center; gap:7px !important; }
+  #spMenu { position:absolute; right:0; bottom:calc(100% + 8px); z-index:25; display:grid; grid-template-columns:repeat(3, 58px); gap:5px; padding:7px; background:rgba(26,28,33,.97); border:1px solid rgba(255,255,255,.14); border-radius:12px; box-shadow:0 10px 28px rgba(0,0,0,.5); }
+  #spMenu[hidden] { display:none; }
+  #spMenu button { min-height:32px; padding:0; justify-content:center; font-size:13px; border-radius:8px; }
+  #spMenu button.on { background:#0a84ff; border-color:#0a84ff; color:#fff; }
+
   #list { overflow-y:auto; flex:1; padding:6px 8px 12px; }
   .row { display:grid; grid-template-columns:62px 1fr auto auto auto 44px; gap:5px; align-items:center; padding:5px 6px; border-radius:8px; }
   .row:hover { background:#2a2d32; }
@@ -110,7 +117,7 @@
     .ll { display:none; } .lf { display:none; } .ls { display:inline; }
     #dock .grp { min-width:0; }
     #views button { padding:0 7px; }
-    .grp button { min-height:34px; padding:0 8px; font-size:12px; } .grp #speed { min-height:34px; width:68px; padding:0 3px; font-size:13px; }
+    .grp button { min-height:34px; padding:0 8px; font-size:12px; } .grp .spb { min-height:34px; width:64px; padding:0 4px; font-size:13px; }
     #dock .grp:last-child { flex:1 1 100%; } #dock .grp:last-child button { flex:1; justify-content:center; padding:0 6px; min-height:36px; }
     .row { grid-template-columns:54px minmax(0,1fr) 32px 32px 32px 34px; gap:4px; padding:4px 0; }
     .row .nm { font-size:12.5px; } .row .dot { margin-right:3px; }
@@ -130,7 +137,7 @@
 <div id="hud"><div class="hrow"><span class="ttl"><b>Цех 3D-печати СБД</b></span><div id="stats"><span class="chip run" title="Роботов печатает сейчас">в работе <b id="nRun">0</b></span><span class="chip wait" title="Код выбран, но робот не печатает: ждёт пуска, на паузе или напечатал">ожидает <b id="nWait">0</b></span><span class="chip off" title="Код не выбран">выключено <b id="nOff">25</b></span><div class="mts"><span class="mtl">Загрузка цеха</span><div class="mt" id="loadMt"><div class="pbar big" id="loadBar"><i id="loadFill"></i><span class="mtv" id="loadTxt">0 %</span></div></div><div class="mt" id="shopMt"><div class="pbar big" id="shopBar"><i id="shopFill"></i><span class="mtv" id="shopTime">0 %</span></div></div></div></div></div></div>
 <div id="dock">
   <div class="grp" id="views"><button class="vw" data-v="iso">Изо</button><button class="vw" data-v="top"><span class="lf">Сверху</span><span class="ls">Верх</span></button><button class="vw" data-v="aisle"><span class="lf">Из прохода</span><span class="ls">Проход</span></button><button class="vw" id="fsBtn" title="Полный экран" hidden><svg viewBox="0 0 16 16" width="15" height="15" aria-hidden="true"><path d="M2 6V2h4M10 2h4v4M14 10v4h-4M6 14H2v-4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button><button class="vw on" id="listBtn" title="Скрыть список роботов"><svg class="li" viewBox="0 0 18 18" width="17" height="17" aria-hidden="true"><rect x="1.5" y="2.5" width="15" height="13" rx="2.5" fill="none" stroke="currentColor" stroke-width="1.6"/><rect class="side" x="11" y="2.5" width="5.5" height="13" rx="2" fill="currentColor"/></svg><span class="ll">Список</span></button></div>
-  <div class="grp"><span class="lbl">Скорость печати</span><select id="speed" title="Во сколько раз быстрее реальной печати"><option value="1">×1 (реальная)</option><option value="2">×2</option><option value="5">×5</option><option value="10">×10</option><option value="30" selected>×30</option><option value="60">×60</option><option value="150">×150</option><option value="300">×300</option><option value="1000">×1000</option></select></div>
+  <div class="grp sp"><span class="lbl">Скорость печати</span><select id="speed" title="Во сколько раз быстрее реальной печати"><option value="1">×1 (реальная)</option><option value="2">×2</option><option value="5">×5</option><option value="10">×10</option><option value="30" selected>×30</option><option value="60">×60</option><option value="150">×150</option><option value="300">×300</option><option value="1000">×1000</option></select><button id="spBtn" class="spb" type="button" title="Скорость печати: во сколько раз быстрее реальной"><span id="spVal">×30</span><svg viewBox="0 0 12 12" width="10" height="10" aria-hidden="true"><path d="M2 4.5l4 4 4-4" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg></button><div id="spMenu" hidden></div></div>
   <div class="grp"><button class="tr" id="allPlay" title="Запустить все роботы с выбранным кодом"><span class="ic"><svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true"><path d="M4 2.5v11l9-5.5z" fill="currentColor"/></svg></span> Пуск всех</button><button class="tr" id="allPause" title="Пауза у всех"><span class="ic"><svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true"><rect x="3.5" y="2.5" width="3.2" height="11" rx="1" fill="currentColor"/><rect x="9.3" y="2.5" width="3.2" height="11" rx="1" fill="currentColor"/></svg></span> Пауза</button><button class="tr" id="allStop" title="Стоп у всех: печать к началу"><span class="ic"><svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true"><rect x="3" y="3" width="10" height="10" rx="1.6" fill="currentColor"/></svg></span> Стоп</button></div>
 </div>
 <div id="split" title="Потяните, чтобы изменить размер списка"></div>
@@ -1668,6 +1675,20 @@ window.GZ={"robot":"H4sIAAAAAAAC/1TdWXPyvJYF4P9ybt1Vygz0nYDMhEiEuasvmCTmIYAV0n++
   document.getElementById('allPause').onclick = () => cells.forEach(c => { if (c.state === 'run') { c.state = 'pause'; setLabel(c); refreshRow(c); } });
   document.getElementById('allStop').onclick = () => cells.forEach(c => { if (c.job) { c.s = 0; c.state = 'idle'; update(c); setLabel(c); refreshRow(c); } });
   const speedSel = document.getElementById('speed');
+  // компактный выбор скорости вместо системного списка (на телефоне он на весь экран)
+  (() => {
+    const btn = document.getElementById('spBtn'), menu = document.getElementById('spMenu'), val = document.getElementById('spVal');
+    [...speedSel.options].forEach(o => {
+      const b = document.createElement('button'); b.type = 'button'; b.textContent = '×' + o.value; b.dataset.v = o.value;
+      b.title = o.value === '1' ? 'Реальная скорость' : 'В ' + o.value + ' раз быстрее реальной';
+      b.onclick = () => { speedSel.value = o.value; speedSel.dispatchEvent(new Event('change')); sync(); menu.hidden = true; };
+      menu.appendChild(b);
+    });
+    function sync() { val.textContent = '×' + speedSel.value; [...menu.children].forEach(b => b.classList.toggle('on', b.dataset.v === speedSel.value)); }
+    btn.onclick = e => { e.stopPropagation(); menu.hidden = !menu.hidden; sync(); };
+    document.addEventListener('pointerdown', e => { if (!menu.hidden && !menu.contains(e.target) && e.target !== btn && !btn.contains(e.target)) menu.hidden = true; });
+    sync();
+  })();
 
   // ---- виды и камера ----
   const views = { iso: { p: K(-8, -30, 20), t: K(13.5, -8, 0.5) }, top: { p: K(13.5, -8.6, 46), t: K(13.5, -8.5, 0) }, aisle: { p: K(3.2, -21.5, 2.2), t: K(8.5, -4, 1.4) } };
