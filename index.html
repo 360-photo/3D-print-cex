@@ -22,13 +22,11 @@
   .mts { flex:1 1 420px; min-width:0; display:flex; align-items:center; gap:12px; }
   .mt { flex:1 1 0; min-width:0; display:flex; align-items:center; gap:8px; }
   .mtl { flex:none; color:#9aa0a6; font-size:12px; white-space:nowrap; }
-  .pbar.big { position:relative; height:17px; min-width:0; border-radius:9px; background:linear-gradient(180deg,rgba(0,0,0,.38),rgba(255,255,255,.06)); box-shadow:inset 0 1px 2px rgba(0,0,0,.55), 0 0 0 1px rgba(255,255,255,.09); }
-  .pbar.big i { border-radius:9px; min-width:0; box-shadow:inset 0 1px 0 rgba(255,255,255,.35), 0 0 8px rgba(80,200,120,.25); }
-  .pbar.big i.tm { background:linear-gradient(90deg,#0a6cff,#3aa0ff 60%,#5ac8fa); box-shadow:inset 0 1px 0 rgba(255,255,255,.35), 0 0 8px rgba(10,132,255,.35); }
-  .pbar.big i.pause { background:linear-gradient(90deg,#d98a00,#ffb020); box-shadow:inset 0 1px 0 rgba(255,255,255,.3); }
-  .mtv { position:absolute; left:10px; top:0; line-height:17px; font-size:11px; font-weight:700; letter-spacing:.015em; color:#fff; font-variant-numeric:tabular-nums; white-space:nowrap; text-shadow:0 1px 2px rgba(0,0,0,.65); }
-  .mtv .mx { display:none; font-weight:500; opacity:.8; }
-  @container hud (min-width:1001px) { .mtv .mx { display:inline; } }
+  .pbar.big { position:relative; height:15px; min-width:0; border-radius:8px; background:rgba(255,255,255,.1); box-shadow:inset 0 0 0 1px rgba(255,255,255,.05); }
+  .pbar.big i { border-radius:8px; min-width:0; }
+  .pbar.big i.tm { background:#0a84ff; }
+  .mtv { position:absolute; left:8px; top:0; line-height:15px; font-size:10.5px; font-weight:600; letter-spacing:.02em; color:#f4f6f8; font-variant-numeric:tabular-nums; white-space:nowrap; text-shadow:0 0 3px rgba(0,0,0,.55); }
+  .mtv .mx { font-weight:500; opacity:.85; }
   #hud b { color:#fff; }
   /* нижняя панель управления: виды, скорость, пуск/пауза/стоп для всех */
   #dock { position:absolute; left:12px; right:calc(var(--pw) + 12px); bottom:12px; display:flex; flex-wrap:wrap; gap:8px; justify-content:center; align-items:center; pointer-events:none; }
@@ -1703,7 +1701,7 @@ window.GZ={"robot":"H4sIAAAAAAAC/1TdWXPyvJYF4P9ybt1Vygz0nYDMhEiEuasvmCTmIYAV0n++
     // шкала времени убывает: ширина — доля оставшейся работы, число — часов до конца печати у самого долгого робота
     // шкала: полная = самая долгая из начатых печатей, заполнение = сколько времени ещё осталось до конца самой долгой работы
     fl.style.width = (longest ? Math.min(1, remAll / longest) * 100 : 0).toFixed(1) + '%';
-    tm.innerHTML = tot ? 'ещё ' + fmtT(remAll) + ' ч<span class="mx"> из ' + fmtT(longest) + ' ч</span>' : 'нет печати';
+    tm.innerHTML = tot ? fmtT(remAll) + ' ч' : 'нет печати';
     const tip = !tot ? 'Общее время печати: нет начатых панелей.'
       : 'Общее время печати (реальное время, без ускорения показа). Роботов с начатой печатью: ' + started + '. Всего работы ' + fmtT(tot) + ' ч, сделано ' + fmtT(done) + ' ч, осталось ' + fmtT(remSum) + ' ч суммарно по роботам; последний печатающий робот закончит через ' + fmtT(remMax) + ' ч.';
     document.getElementById('shopMt').title = tip + ' Шкала: полная — самая долгая из начатых печатей, заполнение — сколько времени ещё осталось до конца самой долгой работы.'; document.getElementById('loadMt').title += ' Правая шкала — сколько часов осталось до конца печати (убывает).';
