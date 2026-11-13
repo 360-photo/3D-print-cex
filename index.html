@@ -1776,15 +1776,23 @@ window.GZ={"robot":"H4sIAAAAAAAC/1TdWXPyvJYF4P9ybt1Vygz0nYDMhEiEuasvmCTmIYAV0n++
   });
   const endDrag = () => { if (!dragging) return; dragging = false; split.classList.remove('drag'); document.body.classList.remove('dragging'); try { localStorage.setItem(isMob() ? 'shopPh' : 'shopPw', parseInt(getComputedStyle(rootEl).getPropertyValue(isMob() ? '--ph' : '--pw'))); } catch (e) {} };
   split.addEventListener('pointerup', endDrag); split.addEventListener('pointercancel', endDrag);
-  // стартовый вид при открытии: взгляд на цех с высоты ~5 м от правого переднего угла (на узком экране — подальше)
-  views.start = { p: K(22, -13.5, 5), t: K(8.5, -2.5, 1.5) };
-  setView('start');
-  if (camera.aspect < 1) { camera.position.sub(controls.target).multiplyScalar(1.6).add(controls.target); controls.update(); }
+  // текущий вид камеры пишется в адрес страницы (#p=…&t=…): ссылку с видом можно отправить, и она откроется с тем же видом
+  const r1 = v => Math.round(v * 10) / 10;
+  controls.addEventListener('end', () => {
+    try {
+      const q = camera.position, t = controls.target;
+      history.replaceState(null, '', '#p=' + [r1(q.x), r1(-q.z), r1(q.y)].join(',') + '&t=' + [r1(t.x), r1(-t.z), r1(t.y)].join(','));
+    } catch (e) {}
+  });
 
   // стартовая сцена: три робота печатают
   const START = [[13, '92', 0.35], [7, '100', 0.6], [19, '90', 0.15], [3, '99', 0.0]];
   for (const [n, id, frac] of START) { const c = cells[n - 1]; if (!JOBS[id]) continue; setJob(c, id); c.s = c.job.total * frac; c.state = n === 3 ? 'idle' : 'run'; update(c); setLabel(c); refreshRow(c); }
+  // стартовый вид: от робота РТК-13 камера отодвинута, чтобы был виден весь цех (на узком экране — ещё дальше)
   focusCell(cells[12]);
+  camera.position.sub(controls.target).multiplyScalar(camera.aspect < 1 ? 2.1 : 2.4).add(controls.target); controls.update();
+  { const m = location.hash.match(/p=([-\d.,]+)&t=([-\d.,]+)/);
+    if (m) { const P = m[1].split(',').map(Number), T = m[2].split(',').map(Number); if (P.length === 3 && T.length === 3 && P.concat(T).every(isFinite)) { camera.position.copy(K(P[0], P[1], P[2])); controls.target.copy(K(T[0], T[1], T[2])); controls.update(); } } }
 
   let last = performance.now(), uiT = 0;
   (function loop(now) {
