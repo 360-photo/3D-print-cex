@@ -22,9 +22,9 @@
   .mts { flex:1 1 420px; min-width:0; display:flex; align-items:center; gap:12px; }
   .mt { flex:1 1 0; min-width:0; display:flex; align-items:center; gap:8px; }
   .mtl { flex:none; color:#9aa0a6; font-size:12px; white-space:nowrap; }
-  .pbar.big { position:relative; height:18px; min-width:0; border-radius:9px; }
-  .pbar.big i { border-radius:9px; min-width:0; }
-  .mtv { position:absolute; left:9px; top:0; line-height:18px; font-size:12px; font-weight:700; color:#fff; font-variant-numeric:tabular-nums; white-space:nowrap; text-shadow:0 1px 2px rgba(0,0,0,.7); }
+  .pbar.big { position:relative; height:15px; min-width:0; border-radius:8px; background:rgba(255,255,255,.1); box-shadow:inset 0 0 0 1px rgba(255,255,255,.05); }
+  .pbar.big i { border-radius:8px; min-width:0; }
+  .mtv { position:absolute; left:8px; top:0; line-height:15px; font-size:10.5px; font-weight:600; letter-spacing:.02em; color:#f4f6f8; font-variant-numeric:tabular-nums; white-space:nowrap; text-shadow:0 0 3px rgba(0,0,0,.55); }
   #hud b { color:#fff; }
   /* нижняя панель управления: виды, скорость, пуск/пауза/стоп для всех */
   #dock { position:absolute; left:12px; right:calc(var(--pw) + 12px); bottom:12px; display:flex; flex-wrap:wrap; gap:8px; justify-content:center; align-items:center; pointer-events:none; }
@@ -100,7 +100,7 @@
     #hud .hrow .ttl { display:none; }
     #stats { flex:1 1 100%; min-width:0; margin-left:0; order:5; flex-wrap:wrap; justify-content:center; gap:5px 6px; }
     .chip { font-size:11px; padding:1px 8px; }
-    .mts { gap:7px; } .mt { gap:5px; } .mtl { font-size:11px; } .mtv { font-size:11px; }
+    .mts { gap:7px; } .mt { gap:5px; } .mtl { font-size:11px; } .mtv { font-size:10px; }
     /* внизу: инструменты (виды, полный экран) рядом со скоростью, ниже пуск / пауза / стоп */
     #dock { right:12px; bottom:calc(var(--ph) + 8px); gap:5px; }
     body.folded #dock { bottom:52px; }
