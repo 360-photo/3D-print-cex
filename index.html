@@ -1781,15 +1781,6 @@ window.GZ={"robot":"H4sIAAAAAAAC/1TdWXPyvJYF4P9ybt1Vygz0nYDMhEiEuasvmCTmIYAV0n++
   });
   const endDrag = () => { if (!dragging) return; dragging = false; split.classList.remove('drag'); document.body.classList.remove('dragging'); try { localStorage.setItem(isMob() ? 'shopPh' : 'shopPw', parseInt(getComputedStyle(rootEl).getPropertyValue(isMob() ? '--ph' : '--pw'))); } catch (e) {} };
   split.addEventListener('pointerup', endDrag); split.addEventListener('pointercancel', endDrag);
-  // текущий вид камеры пишется в адрес страницы (#p=…&t=…): ссылку с видом можно отправить, и она откроется с тем же видом
-  const r1 = v => Math.round(v * 10) / 10;
-  controls.addEventListener('end', () => {
-    try {
-      const q = camera.position, t = controls.target;
-      history.replaceState(null, '', '#p=' + [r1(q.x), r1(-q.z), r1(q.y)].join(',') + '&t=' + [r1(t.x), r1(-t.z), r1(t.y)].join(','));
-    } catch (e) {}
-  });
-
   // стартовая сцена: три робота печатают
   const START = [[13, '92', 0.35], [7, '100', 0.6], [19, '90', 0.15], [3, '99', 0.0]];
   for (const [n, id, frac] of START) { const c = cells[n - 1]; if (!JOBS[id]) continue; setJob(c, id); c.s = c.job.total * frac; c.state = n === 3 ? 'idle' : 'run'; update(c); setLabel(c); refreshRow(c); }
