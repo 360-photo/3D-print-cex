@@ -22,7 +22,9 @@
   .mts { flex:1 1 420px; min-width:0; display:flex; align-items:center; gap:12px; }
   .mt { flex:1 1 0; min-width:0; display:flex; align-items:center; gap:8px; }
   .mtl { flex:none; color:#9aa0a6; font-size:12px; white-space:nowrap; }
-  .mtv { flex:none; min-width:3.4em; text-align:right; color:#c9ccd1; font-variant-numeric:tabular-nums; font-size:12px; white-space:nowrap; }
+  .pbar.big { position:relative; height:18px; min-width:0; border-radius:9px; }
+  .pbar.big i { border-radius:9px; min-width:0; }
+  .mtv { position:absolute; left:9px; top:0; line-height:18px; font-size:12px; font-weight:700; color:#fff; font-variant-numeric:tabular-nums; white-space:nowrap; text-shadow:0 1px 2px rgba(0,0,0,.7); }
   #hud b { color:#fff; }
   /* нижняя панель управления: виды, скорость, пуск/пауза/стоп для всех */
   #dock { position:absolute; left:12px; right:calc(var(--pw) + 12px); bottom:12px; display:flex; flex-wrap:wrap; gap:8px; justify-content:center; align-items:center; pointer-events:none; }
@@ -98,7 +100,7 @@
     #hud .hrow .ttl { display:none; }
     #stats { flex:1 1 100%; min-width:0; margin-left:0; order:5; flex-wrap:wrap; justify-content:center; gap:5px 6px; }
     .chip { font-size:11px; padding:1px 8px; }
-    .mts { gap:7px; } .mt { gap:5px; } .mtl, .mtv { font-size:11px; } .mt .pbar { height:6px; min-width:20px; }
+    .mts { gap:7px; } .mt { gap:5px; } .mtl { font-size:11px; } .mtv { font-size:11px; }
     /* внизу: инструменты (виды, полный экран) рядом со скоростью, ниже пуск / пауза / стоп */
     #dock { right:12px; bottom:calc(var(--ph) + 8px); gap:5px; }
     body.folded #dock { bottom:52px; }
@@ -123,7 +125,7 @@
 <div id="boot" style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:#1b1d21;color:#9aa0a6;z-index:30;padding:24px;text-align:center">Загрузка цеха…</div>
 
 <div id="view"></div>
-<div id="hud"><div class="hrow"><span class="ttl"><b>Цех 3D-печати СБД</b></span><div id="stats"><span class="chip run" title="Роботов печатает сейчас">в работе <b id="nRun">0</b></span><span class="chip wait" title="Код выбран, но робот не печатает: ждёт пуска, на паузе или напечатал">ожидает <b id="nWait">0</b></span><span class="chip off" title="Код не выбран">выключено <b id="nOff">25</b></span><div class="mts"><span class="mtl">Загрузка цеха</span><div class="mt" id="loadMt"><div class="pbar" id="loadBar"><i id="loadFill"></i></div><span class="mtv" id="loadTxt">0 %</span></div><div class="mt" id="shopMt"><div class="pbar" id="shopBar"><i id="shopFill"></i></div><span class="mtv" id="shopTime">0 %</span></div></div></div></div></div>
+<div id="hud"><div class="hrow"><span class="ttl"><b>Цех 3D-печати СБД</b></span><div id="stats"><span class="chip run" title="Роботов печатает сейчас">в работе <b id="nRun">0</b></span><span class="chip wait" title="Код выбран, но робот не печатает: ждёт пуска, на паузе или напечатал">ожидает <b id="nWait">0</b></span><span class="chip off" title="Код не выбран">выключено <b id="nOff">25</b></span><div class="mts"><span class="mtl">Загрузка цеха</span><div class="mt" id="loadMt"><div class="pbar big" id="loadBar"><i id="loadFill"></i><span class="mtv" id="loadTxt">0 %</span></div></div><div class="mt" id="shopMt"><div class="pbar big" id="shopBar"><i id="shopFill"></i><span class="mtv" id="shopTime">0 %</span></div></div></div></div></div></div>
 <div id="dock">
   <div class="grp" id="views"><button class="vw" data-v="iso">Изо</button><button class="vw" data-v="top"><span class="lf">Сверху</span><span class="ls">Верх</span></button><button class="vw" data-v="aisle"><span class="lf">Из прохода</span><span class="ls">Проход</span></button><button class="vw" id="fsBtn" title="Полный экран" hidden><svg viewBox="0 0 16 16" width="15" height="15" aria-hidden="true"><path d="M2 6V2h4M10 2h4v4M14 10v4h-4M6 14H2v-4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button><button class="vw on" id="listBtn" title="Скрыть список роботов"><svg class="li" viewBox="0 0 18 18" width="17" height="17" aria-hidden="true"><rect x="1.5" y="2.5" width="15" height="13" rx="2.5" fill="none" stroke="currentColor" stroke-width="1.6"/><rect class="side" x="11" y="2.5" width="5.5" height="13" rx="2" fill="currentColor"/></svg><span class="ll">Список</span></button></div>
   <div class="grp"><span class="lbl">Скорость печати</span><select id="speed" title="Во сколько раз быстрее реальной печати"><option value="1">×1 (реальная)</option><option value="2">×2</option><option value="5">×5</option><option value="10">×10</option><option value="30" selected>×30</option><option value="60">×60</option><option value="150">×150</option><option value="300">×300</option><option value="1000">×1000</option></select></div>
