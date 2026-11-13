@@ -135,7 +135,7 @@
   #toast { position:absolute; left:50%; top:14px; transform:translateX(-50%); background:#3a2a10; color:#ffd89a; border:1px solid #ffb020; border-radius:10px; padding:8px 14px; max-width:min(90vw,520px); z-index:20; display:none; font-size:13px; }
 </style>
 <div id="toast"></div>
-<div id="boot" style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:#1b1d21;color:#9aa0a6;z-index:30;padding:24px;text-align:center">Загрузка цеха…</div>
+<div id="boot" style="position:absolute;top:0;left:0;right:0;bottom:0;display:flex;align-items:center;justify-content:center;background:#1b1d21;color:#9aa0a6;z-index:30;padding:24px;text-align:center">Загрузка цеха…</div>
 
 <div id="view"></div>
 <div id="hud"><div class="hrow"><span class="ttl"><b>Цех 3D-печати СБД</b></span><div id="stats"><span class="chip run" title="Роботов печатает сейчас">в работе <b id="nRun">0</b></span><span class="chip wait" title="Код выбран, но робот не печатает: ждёт пуска, на паузе или напечатал">ожидает <b id="nWait">0</b></span><span class="chip off" title="Код не выбран">выключено <b id="nOff">25</b></span><div class="mts"><span class="mtl">Загрузка цеха</span><div class="mt" id="loadMt"><div class="pbar big" id="loadBar"><i id="loadFill"></i><span class="mtv" id="loadTxt">0 %</span></div></div><div class="mt" id="shopMt"><div class="pbar big" id="shopBar"><i id="shopFill"></i><span class="mtv" id="shopTime">0 %</span></div></div></div></div></div></div>
@@ -1214,8 +1214,66 @@ window.GZ={"robot":"H4sIAAAAAAAC/1TdWXPyvJYF4P9ybt1Vygz0nYDMhEiEuasvmCTmIYAV0n++
 (async function () {
   // ---- данные упакованы: gzip + целые дельты; распаковываются в браузере при запуске ----
   const boot = document.getElementById('boot');
+  // запасной распаковщик (deflate) для старых браузеров без DecompressionStream (iPhone с iOS ниже 16.4 и т. п.)
+  function inflateRaw(src, start, dstLen) {
+    const dst = new Uint8Array(dstLen); let sp = start, dp = 0, bb = 0, bc = 0;
+    const bits = n => { while (bc < n) { bb |= src[sp++] << bc; bc += 8; } const v = bb & ((1 << n) - 1); bb >>>= n; bc -= n; return v; };
+    const build = (len, n) => {
+      const count = new Uint16Array(16), offs = new Uint16Array(16), symbol = new Uint16Array(n);
+      for (let i = 0; i < n; i++) count[len[i]]++; count[0] = 0;
+      for (let l = 1; l < 15; l++) offs[l + 1] = offs[l] + count[l];
+      for (let i = 0; i < n; i++) if (len[i]) symbol[offs[len[i]]++] = i;
+      return { count, symbol };
+    };
+    const decode = h => {
+      let code = 0, first = 0, index = 0;
+      for (let l = 1; l <= 15; l++) { code |= bits(1); const c = h.count[l]; if (code - c < first) return h.symbol[index + (code - first)]; index += c; first += c; first <<= 1; code <<= 1; }
+      throw new Error('bad code');
+    };
+    const LB = [3,4,5,6,7,8,9,10,11,13,15,17,19,23,27,31,35,43,51,59,67,83,99,115,131,163,195,227,258], LE = [0,0,0,0,0,0,0,0,1,1,1,1,2,2,2,2,3,3,3,3,4,4,4,4,5,5,5,5,0];
+    const DB = [1,2,3,4,5,7,9,13,17,25,33,49,65,97,129,193,257,385,513,769,1025,1537,2049,3073,4097,6145,8193,12289,16385,24577], DE = [0,0,0,0,1,1,2,2,3,3,4,4,5,5,6,6,7,7,8,8,9,9,10,10,11,11,12,12,13,13];
+    const ORD = [16,17,18,0,8,7,9,6,10,5,11,4,12,3,13,2,14,1,15];
+    let fixed = null, last;
+    do {
+      last = bits(1); const type = bits(2);
+      if (type === 0) { bb = 0; bc = 0; const len = src[sp] | (src[sp + 1] << 8); sp += 4; for (let i = 0; i < len; i++) dst[dp++] = src[sp++]; continue; }
+      let lh, dh;
+      if (type === 1) {
+        if (!fixed) { const l = new Uint8Array(288); for (let i = 0; i < 288; i++) l[i] = i < 144 ? 8 : i < 256 ? 9 : i < 280 ? 7 : 8; fixed = [build(l, 288), build(new Uint8Array(30).fill(5), 30)]; }
+        lh = fixed[0]; dh = fixed[1];
+      } else if (type === 2) {
+        const nl = bits(5) + 257, nd = bits(5) + 1, nc = bits(4) + 4, cl = new Uint8Array(19);
+        for (let i = 0; i < nc; i++) cl[ORD[i]] = bits(3);
+        const ch = build(cl, 19), lens = new Uint8Array(nl + nd);
+        for (let i = 0; i < nl + nd;) {
+          const s = decode(ch);
+          if (s < 16) lens[i++] = s;
+          else { let prev = 0, rep; if (s === 16) { prev = lens[i - 1]; rep = 3 + bits(2); } else if (s === 17) rep = 3 + bits(3); else rep = 11 + bits(7); while (rep--) lens[i++] = prev; }
+        }
+        lh = build(lens.subarray(0, nl), nl); dh = build(lens.subarray(nl), nd);
+      } else throw new Error('bad block');
+      for (;;) {
+        let s = decode(lh);
+        if (s < 256) dst[dp++] = s;
+        else if (s === 256) break;
+        else { s -= 257; const len = LB[s] + bits(LE[s]), ds = decode(dh), dist = DB[ds] + bits(DE[ds]); for (let i = 0; i < len; i++, dp++) dst[dp] = dst[dp - dist]; }
+      }
+    } while (!last);
+    return dst;
+  }
+  function gunzipJs(u) {
+    let p = 10; const flg = u[3];
+    if (flg & 4) p += 2 + (u[p] | (u[p + 1] << 8));
+    if (flg & 8) { while (u[p++]); }
+    if (flg & 16) { while (u[p++]); }
+    if (flg & 2) p += 2;
+    const n = (u[u.length - 4] | (u[u.length - 3] << 8) | (u[u.length - 2] << 16) | (u[u.length - 1] << 24)) >>> 0;
+    return inflateRaw(u, p, n).buffer;
+  }
+  const HAS_DS = typeof DecompressionStream !== 'undefined' && typeof Blob !== 'undefined' && !!Blob.prototype.stream && !/[?&]nods/.test(location.search);
   async function gunzip(b64s) {
     const bin = atob(b64s), u = new Uint8Array(bin.length); for (let i = 0; i < bin.length; i++) u[i] = bin.charCodeAt(i);
+    if (!HAS_DS) { await new Promise(r => setTimeout(r, 0)); return gunzipJs(u); }
     return await new Response(new Blob([u]).stream().pipeThrough(new DecompressionStream('gzip'))).arrayBuffer();
   }
   function decodeJob(ab, meta) {
