@@ -1320,6 +1320,24 @@ window.GZ={"robot":"H4sIAAAAAAAC/1TdWXPyvJYF4P9ybt1Vygz0nYDMhEiEuasvmCTmIYAV0n++
   const LINK_PARTS = RM.links.map(gs => gs.map(g => ({ geo: geoOf(g), m: linkMat(g.c) })));
   const TOOL_PARTS = RM.tool.map(g => ({ geo: geoOf(g), m: new THREE.MeshStandardMaterial({ color: new THREE.Color(...g.c).convertSRGBToLinear(), roughness: 0.45, metalness: 0.35, side: THREE.DoubleSide }) }));
 
+  // цилиндр экструдера (самая крупная связная часть детали 2) отделяем от остального блока, чтобы красить его отдельно:
+  // зелёный (цвет Сбера) у всех роботов, у РТК-25 (крайний) — розовый
+  const CYL_GREEN = new THREE.MeshStandardMaterial({ color: new THREE.Color(0x21A038).convertSRGBToLinear(), roughness: 0.5, metalness: 0.15, side: THREE.DoubleSide });
+  const CYL_PINK = new THREE.MeshStandardMaterial({ color: new THREE.Color(0xE8458F).convertSRGBToLinear(), roughness: 0.5, metalness: 0.15, side: THREE.DoubleSide });
+  const PINK_ROBOT = 24;   // индекс робота с розовым цилиндром (РТК-25)
+  (() => {
+    const tp = TOOL_PARTS[2], g = tp.geo, idx = g.index.array, n = g.attributes.position.count;
+    const par = new Int32Array(n); for (let i = 0; i < n; i++) par[i] = i;
+    const find = x => { while (par[x] !== x) { par[x] = par[par[x]]; x = par[x]; } return x; };
+    for (let t = 0; t < idx.length; t += 3) { const a = find(idx[t]); par[find(idx[t + 1])] = a; par[find(idx[t + 2])] = a; }
+    const cnt = new Map(); for (let v = 0; v < n; v++) { const r = find(v); cnt.set(r, (cnt.get(r) || 0) + 1); }
+    let best = -1, bn = 0; for (const [r, c] of cnt) if (c > bn) { bn = c; best = r; }
+    const a = [], b = []; for (let t = 0; t < idx.length; t += 3) (find(idx[t]) === best ? a : b).push(idx[t], idx[t + 1], idx[t + 2]);
+    const mk = arr => { const ng = new THREE.BufferGeometry(); ng.setAttribute('position', g.attributes.position); ng.setAttribute('normal', g.attributes.normal); ng.setIndex(new THREE.BufferAttribute(new Uint32Array(arr), 1)); return ng; };
+    tp.geo = mk(b);
+    TOOL_PARTS.push({ geo: mk(a), m: CYL_GREEN, cyl: true });
+  })();
+
   // ---- опора как во вьювере (UpdateRobotPedestal): восьмигранная колонна, плита, рёбра, 4 лапы на косых гранях с рёбрами и болтами, значок СБЕР на гранях ±Y ----
   const pedMat = mat(0x16171a, { roughness: 0.6 });
   function prism(poly, z0, z1) {  // poly в мм
@@ -1582,7 +1600,7 @@ window.GZ={"robot":"H4sIAAAAAAAC/1TdWXPyvJYF4P9ybt1Vygz0nYDMhEiEuasvmCTmIYAV0n++
     pedestal(g);
     const root = new THREE.Group(); root.position.z = ROOT_Z; g.add(root);
     cell.linkObjs = LINK_PARTS.map(ps => { const o = new THREE.Group(); o.matrixAutoUpdate = false; ps.forEach(p => { const m = new THREE.Mesh(p.geo, p.m); m.castShadow = true; o.add(m); }); root.add(o); return o; });
-    cell.toolObj = new THREE.Group(); cell.toolObj.matrixAutoUpdate = false; TOOL_PARTS.forEach(p => { const m = new THREE.Mesh(p.geo, p.m); m.castShadow = true; cell.toolObj.add(m); }); root.add(cell.toolObj);
+    cell.toolObj = new THREE.Group(); cell.toolObj.matrixAutoUpdate = false; TOOL_PARTS.forEach(p => { const m = new THREE.Mesh(p.geo, p.cyl && cells.length === PINK_ROBOT ? CYL_PINK : p.m); m.castShadow = true; cell.toolObj.add(m); }); root.add(cell.toolObj);
     // стол: фанера на раме; система стола = BASE
     const table = new THREE.Group(); table.matrixAutoUpdate = false; table.matrix.copy(BASE); root.add(table);
     table.add(box(1.22, 2.44, 0.021, plyMat, 0, 0, -0.0105)); table.add(box(1.14, 2.36, 0.06, frameMat, 0, 0, -0.051));
