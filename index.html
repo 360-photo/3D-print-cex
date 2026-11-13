@@ -6,18 +6,20 @@
   #hud .hrow { display:flex; align-items:center; gap:10px; }
   #hud .hrow { flex-wrap:wrap; row-gap:6px; }
   #hud .hrow .ttl { flex:none; white-space:nowrap; }
-  #stats { flex:1 1 400px; min-width:400px; display:flex; align-items:center; gap:8px; margin-left:6px; }
+  #stats { flex:1 1 640px; min-width:640px; display:flex; align-items:center; gap:8px; margin-left:6px; }
   #hud { container-type:inline-size; container-name:hud; }
   /* узкая панель (маленькое окно или широкий список справа): счётчики и шкала переходят на вторую строку */
-  @container hud (max-width: 780px) {
+  @container hud (max-width: 1000px) {
     #stats { flex:1 1 100%; min-width:0; margin-left:0; order:5; flex-wrap:wrap; row-gap:7px; }
-    #shopBar { order:9; flex:1 1 100%; height:6px; } #shopTime { margin-left:auto; }
+    .mt { order:9; flex:1 1 100%; }
     #hud .hrow .ttl { flex:1; }
   }
   .pbar { flex:1 1 90px; min-width:70px; height:9px; border-radius:6px; background:rgba(255,255,255,.12); overflow:hidden; }
   .pbar i { display:block; height:100%; width:0; border-radius:6px; background:#0a84ff; transition:width .25s linear; }
   .pbar i.run { background:linear-gradient(90deg,#1f9e4a,#34c759); } .pbar i.pause { background:#ffb020; } .pbar i.done { background:#34c759; }
-  #shopTime { flex:none; color:#c9ccd1; font-variant-numeric:tabular-nums; font-size:12px; white-space:nowrap; }
+  .mt { flex:1 1 250px; min-width:0; display:flex; align-items:center; gap:8px; }
+  .mtl { flex:none; color:#9aa0a6; font-size:12px; white-space:nowrap; }
+  .mtv { flex:none; color:#c9ccd1; font-variant-numeric:tabular-nums; font-size:12px; white-space:nowrap; }
   #hud b { color:#fff; }
   /* нижняя панель управления: виды, скорость, пуск/пауза/стоп для всех */
   #dock { position:absolute; left:12px; right:calc(var(--pw) + 12px); bottom:12px; display:flex; flex-wrap:wrap; gap:8px; justify-content:center; align-items:center; pointer-events:none; }
@@ -93,8 +95,8 @@
     #hud .hrow .ttl { display:none; }
     #stats { flex:1 1 100%; min-width:0; margin-left:0; order:5; flex-wrap:wrap; justify-content:center; gap:5px 6px; }
     .chip { font-size:11px; padding:1px 8px; }
-    #shopTime { order:8; flex:1 1 100%; margin-left:0; text-align:center; font-size:11.5px; }
-    #shopBar { order:9; flex:1 1 100%; height:5px; min-width:0; }
+    .mt { order:9; flex:1 1 100%; gap:6px; } .mtl, .mtv { font-size:11.5px; } .mtl { width:86px; } .mtv { margin-left:auto; }
+    .pbar { height:6px; min-width:0; }
     /* внизу: инструменты (виды, полный экран) рядом со скоростью, ниже пуск / пауза / стоп */
     #dock { right:12px; bottom:calc(var(--ph) + 8px); gap:5px; }
     body.folded #dock { bottom:52px; }
@@ -119,7 +121,7 @@
 <div id="boot" style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:#1b1d21;color:#9aa0a6;z-index:30;padding:24px;text-align:center">Загрузка цеха…</div>
 
 <div id="view"></div>
-<div id="hud"><div class="hrow"><span class="ttl"><b>Цех 3D-печати СБД</b></span><div id="stats"><span class="chip run" title="Роботов печатает сейчас">в работе <b id="nRun">0</b></span><span class="chip wait" title="Код выбран, но робот не печатает: ждёт пуска, на паузе или напечатал">ожидает <b id="nWait">0</b></span><span class="chip off" title="Код не выбран">выключено <b id="nOff">25</b></span><div class="pbar" id="shopBar"><i id="shopFill"></i></div><span id="shopTime">нет запущенных роботов</span></div></div></div>
+<div id="hud"><div class="hrow"><span class="ttl"><b>Цех 3D-печати СБД</b></span><div id="stats"><span class="chip run" title="Роботов печатает сейчас">в работе <b id="nRun">0</b></span><span class="chip wait" title="Код выбран, но робот не печатает: ждёт пуска, на паузе или напечатал">ожидает <b id="nWait">0</b></span><span class="chip off" title="Код не выбран">выключено <b id="nOff">25</b></span><div class="mt" id="loadMt"><span class="mtl">Загрузка цеха</span><div class="pbar" id="loadBar"><i id="loadFill"></i></div><span class="mtv" id="loadTxt">0 из 25 · 0 %</span></div><div class="mt" id="shopMt"><span class="mtl">Время печати</span><div class="pbar" id="shopBar"><i id="shopFill"></i></div><span class="mtv" id="shopTime">нет запущенных</span></div></div></div></div>
 <div id="dock">
   <div class="grp" id="views"><button class="vw" data-v="iso">Изо</button><button class="vw" data-v="top"><span class="lf">Сверху</span><span class="ls">Верх</span></button><button class="vw" data-v="aisle"><span class="lf">Из прохода</span><span class="ls">Проход</span></button><button class="vw" id="fsBtn" title="Полный экран" hidden><svg viewBox="0 0 16 16" width="15" height="15" aria-hidden="true"><path d="M2 6V2h4M10 2h4v4M14 10v4h-4M6 14H2v-4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button><button class="vw on" id="listBtn" title="Скрыть список роботов"><svg class="li" viewBox="0 0 18 18" width="17" height="17" aria-hidden="true"><rect x="1.5" y="2.5" width="15" height="13" rx="2.5" fill="none" stroke="currentColor" stroke-width="1.6"/><rect class="side" x="11" y="2.5" width="5.5" height="13" rx="2" fill="currentColor"/></svg><span class="ll">Список</span></button></div>
   <div class="grp"><span class="lbl">Скорость печати</span><select id="speed" title="Во сколько раз быстрее реальной печати"><option value="1">×1 (реальная)</option><option value="2">×2</option><option value="5">×5</option><option value="10">×10</option><option value="30" selected>×30</option><option value="60">×60</option><option value="150">×150</option><option value="300">×300</option><option value="1000">×1000</option></select></div>
@@ -1554,7 +1556,7 @@ window.GZ={"robot":"H4sIAAAAAAAC/1TdWXPyvJYF4P9ybt1Vygz0nYDMhEiEuasvmCTmIYAV0n++
   }
   const labelKey = c => { const s = robotStatus(c), J = c.job; return s.t + '|' + s.d + '|' + (J ? J.name : '') + '|' + (J && (c.state !== 'idle' || c.s > 0) ? Math.floor(100 * Math.min(1, c.s / J.total)) : -1); };
   const plyMat = mat(0xe2c99a, { roughness: 0.85 }), frameMat = mat(0x202226, { roughness: 0.5, metalness: 0.4 });
-  const cells = [], pickables = [];
+  const cells = [], pickables = [], labelSprites = [];
   let num = 1;
   for (let c = 0; c < COLS; c++) for (let r = 0; r < ROWS; r++) {
     const cell = { num, name: 'РТК-' + num, x: c * PITCH_X, y: -r * PITCH_Y, job: null, s: 0, state: 'idle', q: HOME.slice() };
@@ -1574,7 +1576,7 @@ window.GZ={"robot":"H4sIAAAAAAAC/1TdWXPyvJYF4P9ybt1Vygz0nYDMhEiEuasvmCTmIYAV0n++
     cell.labelTex = new THREE.CanvasTexture(cell.lcv); cell.labelTex.encoding = THREE.sRGBEncoding; cell.labelTex.anisotropy = 4;
     const sp = new THREE.Sprite(new THREE.SpriteMaterial({ map: cell.labelTex, depthTest: false, transparent: true }));
     sp.center.set(0.5, 0); sp.scale.set(1.7, 1.7 * LH / LW, 1); sp.renderOrder = 10; sp.position.set(0.3, 0, 3.45); g.add(sp);
-    const ci = cells.length; g.traverse(o => { if (o.isMesh) { o.userData.cell = ci; pickables.push(o); } });
+    const ci = cells.length; sp.userData.cell = ci; labelSprites.push(sp); g.traverse(o => { if (o.isMesh) { o.userData.cell = ci; pickables.push(o); } });
     cells.push(cell); pose(cell); num++; setLabel(cell);
   }
 
@@ -1682,11 +1684,17 @@ window.GZ={"robot":"H4sIAAAAAAAC/1TdWXPyvJYF4P9ybt1Vygz0nYDMhEiEuasvmCTmIYAV0n++
     document.getElementById('nRun').textContent = run; document.getElementById('nWait').textContent = wait; document.getElementById('nOff').textContent = off;
     const fl = document.getElementById('shopFill'), tm = document.getElementById('shopTime'), bar = document.getElementById('shopBar');
     const pct = tot ? done / tot : 0;
+    // шкала 1 — загрузка цеха: какая доля роботов печатает прямо сейчас
+    const lf = run / cells.length, lfEl = document.getElementById('loadFill'), lt = document.getElementById('loadTxt');
+    lfEl.style.width = (lf * 100).toFixed(1) + '%'; lfEl.className = run ? 'run' : '';
+    lt.textContent = run + ' из ' + cells.length + ' · ' + Math.round(lf * 100) + ' %';
+    document.getElementById('loadMt').title = 'Загрузка цеха: сколько роботов из ' + cells.length + ' печатает сейчас (' + run + ').';
+    // шкала 2 — общее время печати: сколько от суммарного времени начатых панелей уже напечатано
     fl.style.width = (pct * 100).toFixed(1) + '%'; fl.className = run ? 'run' : tot ? 'pause' : '';
-    tm.textContent = !tot ? 'нет запущенных роботов' : 'загрузка ' + Math.floor(pct * 100) + ' % · ' + (run ? 'до конца ' + fmtT(remMax) + ' ч' : 'все на паузе');
-    const tip = !tot ? 'Загрузка цеха по времени: сейчас никто не печатает и нет начатых панелей.'
-      : 'Загрузка цеха по времени (реальное время печати, без ускорения показа). Роботов с начатой печатью: ' + started + '. Всего работы ' + fmtT(tot) + ' ч, сделано ' + fmtT(done) + ' ч, осталось ' + fmtT(remSum) + ' ч суммарно по роботам; последний печатающий робот закончит через ' + fmtT(remMax) + ' ч.';
-    bar.title = tm.title = tip;
+    tm.textContent = !tot ? 'нет запущенных' : Math.floor(pct * 100) + ' % · ' + (run ? 'до конца ' + fmtT(remMax) + ' ч' : 'все на паузе');
+    const tip = !tot ? 'Общее время печати: нет начатых панелей.'
+      : 'Общее время печати (реальное время, без ускорения показа). Роботов с начатой печатью: ' + started + '. Всего работы ' + fmtT(tot) + ' ч, сделано ' + fmtT(done) + ' ч, осталось ' + fmtT(remSum) + ' ч суммарно по роботам; последний печатающий робот закончит через ' + fmtT(remMax) + ' ч.';
+    document.getElementById('shopMt').title = tip;
   }
   function selectCell(cell) {
     selCell = cell; updStats();
@@ -1701,7 +1709,8 @@ window.GZ={"robot":"H4sIAAAAAAAC/1TdWXPyvJYF4P9ybt1Vygz0nYDMhEiEuasvmCTmIYAV0n++
     const r = renderer.domElement.getBoundingClientRect();
     ndc.set((e.clientX - r.left) / r.width * 2 - 1, -(e.clientY - r.top) / r.height * 2 + 1);
     ray.setFromCamera(ndc, camera);
-    const hit = ray.intersectObjects(pickables, false)[0];
+    // карточки рисуются поверх сцены, поэтому сначала проверяем их, потом самого робота
+    const hit = ray.intersectObjects(labelSprites, false)[0] || ray.intersectObjects(pickables, false)[0];
     if (hit) selectCell(cells[hit.object.userData.cell]);
   });
   function focusCell(cell) {
