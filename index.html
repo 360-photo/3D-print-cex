@@ -7,13 +7,18 @@
   #hud .hrow { flex-wrap:wrap; row-gap:6px; }
   #hud .hrow .ttl { flex:none; white-space:nowrap; }
   #hud.off .sub { display:none; }
-  #selInfo { flex:1 1 300px; min-width:0; display:flex; align-items:center; gap:10px; margin-left:6px; }
-  #selName { flex:0 1 auto; max-width:46%; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; color:#9ec5ff; font-weight:600; }
-  #selName.none { color:#9aa0a6; font-weight:400; }
+  #stats { flex:1 1 400px; min-width:400px; display:flex; align-items:center; gap:8px; margin-left:6px; }
+  #hud { container-type:inline-size; container-name:hud; }
+  /* узкая панель (маленькое окно или широкий список справа): счётчики и шкала переходят на вторую строку */
+  @container hud (max-width: 780px) {
+    #stats { flex:1 1 100%; min-width:0; margin-left:0; order:5; flex-wrap:wrap; row-gap:7px; }
+    #shopBar { order:9; flex:1 1 100%; height:6px; } #shopTime { margin-left:auto; }
+    #hud .hrow .ttl { flex:1; }
+  }
   .pbar { flex:1 1 90px; min-width:70px; height:9px; border-radius:6px; background:rgba(255,255,255,.12); overflow:hidden; }
   .pbar i { display:block; height:100%; width:0; border-radius:6px; background:#0a84ff; transition:width .25s linear; }
   .pbar i.run { background:linear-gradient(90deg,#1f9e4a,#34c759); } .pbar i.pause { background:#ffb020; } .pbar i.done { background:#34c759; }
-  #selTime { flex:none; color:#c9ccd1; font-variant-numeric:tabular-nums; font-size:12px; white-space:nowrap; }
+  #shopTime { flex:none; color:#c9ccd1; font-variant-numeric:tabular-nums; font-size:12px; white-space:nowrap; }
   #hud b { color:#fff; }
   #hud .sub { color:#9aa0a6; }
   #hud .hbody { margin-top:4px; color:#c9ccd1; line-height:1.45; }
@@ -48,10 +53,11 @@
   .row .nm { font-weight:600; cursor:pointer; color:#9ec5ff; line-height:1.15; }
   .row .nm small { display:block; font-size:10.5px; font-weight:600; letter-spacing:.01em; margin-top:1px; color:#7c8087; }
   .row .nm small.run { color:#34c759; } .row .nm small.wait { color:#e8b04a; } .row .nm small.off { color:#7c8087; }
-  #selSt { flex:none; font-size:11.5px; font-weight:600; padding:2px 9px; border-radius:999px; border:1px solid; white-space:nowrap; }
-  #selSt.run { color:#7ee29b; background:rgba(52,199,89,.14); border-color:rgba(52,199,89,.5); }
-  #selSt.wait { color:#ffc766; background:rgba(255,176,32,.12); border-color:rgba(255,176,32,.45); }
-  #selSt.off { color:#9aa0a6; background:rgba(255,255,255,.06); border-color:rgba(255,255,255,.18); }
+  .chip { flex:none; font-size:11.5px; font-weight:600; padding:2px 9px; border-radius:999px; border:1px solid; white-space:nowrap; }
+  .chip b { margin-left:3px; color:#fff; font-variant-numeric:tabular-nums; }
+  .chip.run { color:#7ee29b; background:rgba(52,199,89,.14); border-color:rgba(52,199,89,.5); }
+  .chip.wait { color:#ffc766; background:rgba(255,176,32,.12); border-color:rgba(255,176,32,.45); }
+  .chip.off { color:#9aa0a6; background:rgba(255,255,255,.06); border-color:rgba(255,255,255,.18); }
   .row .pc { text-align:right; color:#9aa0a6; font-variant-numeric:tabular-nums; }
   .row button { padding:3px 7px; min-width:28px; }
   .dot { display:inline-block; width:8px; height:8px; border-radius:50%; margin-right:5px; background:#5a5d63; }
@@ -64,7 +70,15 @@
   body.dragging { user-select:none; cursor:col-resize; }
   #fsBtn { pointer-events:auto; flex:none; padding:4px 10px; border-radius:8px; background:rgba(255,255,255,.07); border-color:rgba(255,255,255,.14); font-size:14px; line-height:1; }
   #view canvas { display:block; }
-  #fold { display:none; margin-left:auto; padding:2px 10px; }
+  #fold { display:inline-block; margin-left:auto; padding:2px 10px; }
+  #panelOpen { position:absolute; right:12px; top:12px; z-index:16; display:none; padding:6px 13px; border-radius:10px; background:rgba(20,22,26,.9); border-color:rgba(255,255,255,.18); font-weight:600; box-shadow:0 4px 14px rgba(0,0,0,.35); }
+  @media (min-width: 821px) {
+    body.pclosed #panel, body.pclosed #split { display:none; }
+    body.pclosed #view { right:0; }
+    body.pclosed #dock { right:12px; }
+    body.pclosed #hud { right:140px; }
+    body.pclosed #panelOpen { display:block; }
+  }
   #panel h2 { display:flex; align-items:center; }
   /* телефон и узкое окно: список роботов — нижняя шторка, её можно свернуть */
   @media (max-width: 820px) {
@@ -80,12 +94,13 @@
     #fold { display:inline-block; }
     #hud { right:12px; font-size:12px; padding:6px 6px 6px 12px; }
     #hud .sub { display:none; }
-    #selInfo { flex:1 1 100%; margin-left:0; order:5; } #selName { max-width:50%; }
+    #stats { flex:1 1 100%; margin-left:0; order:5; flex-wrap:wrap; row-gap:7px; }
+    #shopBar { order:9; flex:1 1 100%; height:6px; } #shopTime { margin-left:auto; font-size:11.5px; }
     #hud .hrow { column-gap:8px; } #hud .hrow .ttl { flex:1; }
     #dock { right:12px; bottom:calc(var(--ph) + 10px); gap:6px; }
     /* виды — вверху под пояснением */
-    #views { position:fixed; top:calc(env(safe-area-inset-top, 0px) + 98px); left:12px; z-index:6; }
-    body.hudopen #views { top:calc(env(safe-area-inset-top, 0px) + 250px); }
+    #views { position:fixed; top:calc(env(safe-area-inset-top, 0px) + 122px); left:12px; z-index:6; }
+    body.hudopen #views { top:calc(env(safe-area-inset-top, 0px) + 270px); }
     body.folded #dock { bottom:58px; }
     .grp { padding:4px 5px; gap:3px; } .grp .lbl { display:none; }
     .grp button { min-height:38px; padding:0 9px; font-size:12.5px; } .grp #speed { min-height:38px; width:84px; padding:0 4px; }
@@ -104,12 +119,13 @@
 <div id="boot" style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:#1b1d21;color:#9aa0a6;z-index:30;padding:24px;text-align:center">Загрузка цеха…</div>
 
 <div id="view"></div>
-<div id="hud"><div class="hrow"><span class="ttl"><b>Цех (эскиз)</b><span class="sub"> · 25 × KR 120 R3100 · сетка 5×5 · условно 33 × 25 м</span></span><div id="selInfo"><span id="selSt" class="off" hidden></span><span id="selName" class="none">Робот не выбран — щёлкните по роботу</span><div class="pbar" title="Сколько напечатано (в реальном времени печати)"><i id="selFill"></i></div><span id="selTime"></span></div><button id="fsBtn" title="Полный экран" hidden>⛶</button><button id="hudFold" title="Свернуть пояснение, чтобы оно не занимало места">▴ Свернуть</button></div><div class="hbody">У каждого РТК справа: выбор кода (в том числе свой файл с компьютера), пуск, пауза и стоп (печать к началу). Щелчок по роботу в сцене выбирает его в списке, щелчок по имени в списке подводит камеру. Мышь: левая кнопка вращает, правая сдвигает, колесо приближает.</div></div>
+<div id="hud"><div class="hrow"><span class="ttl"><b>Цех (эскиз)</b><span class="sub"> · 25 × KR 120 R3100 · сетка 5×5 · условно 33 × 25 м</span></span><div id="stats"><span class="chip run" title="Роботов печатает сейчас">в работе <b id="nRun">0</b></span><span class="chip wait" title="Код выбран, но робот не печатает: ждёт пуска, на паузе или напечатал">ожидает <b id="nWait">0</b></span><span class="chip off" title="Код не выбран">выключено <b id="nOff">25</b></span><div class="pbar" id="shopBar"><i id="shopFill"></i></div><span id="shopTime">нет запущенных роботов</span></div><button id="fsBtn" title="Полный экран" hidden>⛶</button><button id="hudFold" title="Свернуть пояснение, чтобы оно не занимало места">▴ Свернуть</button></div><div class="hbody">У каждого РТК справа: выбор кода (в том числе свой файл с компьютера), пуск, пауза и стоп (печать к началу). Щелчок по роботу в сцене выбирает его в списке, щелчок по имени в списке подводит камеру. Мышь: левая кнопка вращает, правая сдвигает, колесо приближает.</div></div>
 <div id="dock">
   <div class="grp" id="views"><button class="vw" data-v="iso">Изо</button><button class="vw" data-v="top">Сверху</button><button class="vw" data-v="aisle">Из прохода</button></div>
   <div class="grp"><span class="lbl">Скорость печати</span><select id="speed" title="Во сколько раз быстрее реальной печати"><option value="1">×1 (реальная)</option><option value="2">×2</option><option value="5">×5</option><option value="10">×10</option><option value="30" selected>×30</option><option value="60">×60</option><option value="150">×150</option><option value="300">×300</option><option value="1000">×1000</option></select></div>
   <div class="grp"><button class="tr" id="allPlay" title="Запустить все роботы с выбранным кодом"><span class="ic">▶</span> Пуск всех</button><button class="tr" id="allPause" title="Пауза у всех"><span class="ic">⏸</span> Пауза</button><button class="tr" id="allStop" title="Стоп у всех: печать к началу"><span class="ic">⏹</span> Стоп</button></div>
 </div>
+<button id="panelOpen" title="Показать список роботов">◂ Роботы</button>
 <div id="split" title="Потяните, чтобы изменить размер списка"></div>
 <div id="panel">
   <h2>Роботы <button id="fold" title="Свернуть / развернуть список">▾</button></h2>
@@ -1218,7 +1234,21 @@ window.GZ={"robot":"H4sIAAAAAAAC/1TdWXPyvJYF4P9ybt1Vygz0nYDMhEiEuasvmCTmIYAV0n++
   const controls = new THREE.OrbitControls(camera, renderer.domElement);
   function resize() { const w = Math.max(1, viewEl.clientWidth), h = Math.max(1, viewEl.clientHeight); renderer.setSize(w, h); camera.aspect = w / h; camera.updateProjectionMatrix(); }
   addEventListener('resize', resize); new ResizeObserver(resize).observe(viewEl); resize();
-  document.getElementById('fold').onclick = () => { document.body.classList.toggle('folded'); document.getElementById('fold').textContent = document.body.classList.contains('folded') ? '▴' : '▾'; };
+  // правый список: на компьютере сворачивается целиком (кнопка «Роботы» вверху справа вернёт его), на телефоне — шторка
+  const foldBtn = document.getElementById('fold'), openBtn = document.getElementById('panelOpen'), mqM = matchMedia('(max-width: 820px)');
+  function syncFold() {
+    if (mqM.matches) { const f = document.body.classList.contains('folded'); foldBtn.textContent = f ? '▴' : '▾'; foldBtn.title = f ? 'Развернуть список' : 'Свернуть список'; }
+    else { foldBtn.textContent = '▸'; foldBtn.title = 'Свернуть список роботов'; }
+  }
+  foldBtn.onclick = () => {
+    if (mqM.matches) document.body.classList.toggle('folded');
+    else { document.body.classList.add('pclosed'); try { localStorage.setItem('shopPclosed', '1'); } catch (e) {} }
+    syncFold();
+  };
+  openBtn.onclick = () => { document.body.classList.remove('pclosed'); try { localStorage.removeItem('shopPclosed'); } catch (e) {} };
+  if (mqM.addEventListener) mqM.addEventListener('change', syncFold);
+  try { if (localStorage.getItem('shopPclosed') === '1') document.body.classList.add('pclosed'); } catch (e) {}
+  syncFold();
 
   const world = new THREE.Group(); world.rotation.x = -Math.PI / 2; scene.add(world);
   const K = (x, y, z) => new THREE.Vector3(x, z, -y);                        // точка KUKA → three.js
@@ -1480,14 +1510,47 @@ window.GZ={"robot":"H4sIAAAAAAAC/1TdWXPyvJYF4P9ybt1Vygz0nYDMhEiEuasvmCTmIYAV0n++
   }
 
   // ---- ячейки ----
-  function labelCanvas(text, state) {
-    const cv = document.createElement('canvas'); cv.width = 512; cv.height = 160; const x = cv.getContext('2d');
-    const col = state === 'run' ? '#21a038' : state === 'pause' ? '#e09400' : '#1f3a5f';
-    x.fillStyle = 'rgba(255,255,255,0.95)'; x.strokeStyle = col; x.lineWidth = 10;
-    const r = 30; x.beginPath(); x.moveTo(r, 5); x.arcTo(507, 5, 507, 155, r); x.arcTo(507, 155, 5, 155, r); x.arcTo(5, 155, 5, 5, r); x.arcTo(5, 5, 507, 5, r); x.fill(); x.stroke();
-    x.fillStyle = col; x.font = 'bold 92px Segoe UI, Arial'; x.textAlign = 'center'; x.textBaseline = 'middle'; x.fillText(text, 256, 84);
-    return cv;
+  // карточка над роботом (вариант B): цветная шапка со статусом, ниже имя; после запуска — шкала прогресса и имя файла.
+  // Рисуется на canvas 512×256, прижата к низу (спрайт якорится снизу)
+  const LW = 512, LH = 256;
+  function rr(x, X, Y, W, H, R) { x.beginPath(); if (x.roundRect) x.roundRect(X, Y, W, H, R); else x.rect(X, Y, W, H); }
+  function ellipsize(x, s, w) { if (x.measureText(s).width <= w) return s; while (s.length > 2 && x.measureText(s + '…').width > w) s = s.slice(0, -1); return s + '…'; }
+  function drawLabel(cell) {
+    const cv = cell.lcv, x = cv.getContext('2d');
+    x.clearRect(0, 0, LW, LH);
+    const st = robotStatus(cell), J = cell.job, started = !!J && (cell.state !== 'idle' || cell.s > 0);
+    const col = st.k === 'run' ? '#2cb44e' : st.k === 'wait' ? '#d99a2b' : '#6f757c';
+    const CW = 392, X0 = (LW - CW) / 2, HH = 40, BH = started ? 150 : 84, H = HH + BH, bottom = LH - 20, top = bottom - H, R = 22;
+    x.save();
+    x.shadowColor = 'rgba(0,0,0,.40)'; x.shadowBlur = 14; x.shadowOffsetY = 4;
+    x.fillStyle = '#14171b'; rr(x, X0, top, CW, H, R); x.fill();
+    x.restore();
+    x.save();
+    rr(x, X0, top, CW, H, R); x.clip();
+    x.fillStyle = col; x.fillRect(X0, top, CW, HH);
+    x.restore();
+    x.strokeStyle = 'rgba(255,255,255,.16)'; x.lineWidth = 2; rr(x, X0 + 1, top + 1, CW - 2, H - 2, R); x.stroke();
+    let detail = '';
+    if (st.d === 'пауза') detail = ' · ПАУЗА';
+    else if (st.d === 'печать готова') detail = ' · ГОТОВО';
+    else if (st.d === 'загрузка файла') detail = ' · ЗАГРУЗКА';
+    x.fillStyle = '#ffffff'; x.font = '700 22px Segoe UI, Arial, sans-serif'; x.textBaseline = 'middle'; x.textAlign = 'left';
+    if ('letterSpacing' in x) x.letterSpacing = '3px';
+    x.fillText(st.t.toUpperCase() + detail, X0 + 20, top + HH / 2 + 1);
+    if ('letterSpacing' in x) x.letterSpacing = '0px';
+    x.fillStyle = '#ffffff'; x.font = '800 56px Segoe UI, Arial, sans-serif'; x.textBaseline = 'alphabetic';
+    x.fillText(cell.name, X0 + 20, top + HH + 62);
+    if (started) {
+      const f = Math.min(1, cell.s / J.total), bx = X0 + 20, bw = CW - 40, by = top + HH + 80;
+      x.fillStyle = 'rgba(255,255,255,.16)'; rr(x, bx, by, bw, 10, 5); x.fill();
+      if (f > 0.002) { x.fillStyle = col; rr(x, bx, by, Math.max(10, bw * f), 10, 5); x.fill(); }
+      x.font = '700 22px Segoe UI, Arial, sans-serif'; x.textBaseline = 'middle'; x.textAlign = 'right'; x.fillStyle = '#e6e8eb';
+      x.fillText(Math.floor(f * 100) + ' %', bx + bw, top + HH + 120);
+      x.textAlign = 'left'; x.fillStyle = '#aab0b8'; x.font = '500 22px Segoe UI, Arial, sans-serif';
+      x.fillText(ellipsize(x, J.name, bw - 70), bx, top + HH + 120);
+    }
   }
+  const labelKey = c => { const s = robotStatus(c), J = c.job; return s.t + '|' + s.d + '|' + (J ? J.name : '') + '|' + (J && (c.state !== 'idle' || c.s > 0) ? Math.floor(100 * Math.min(1, c.s / J.total)) : -1); };
   const plyMat = mat(0xe2c99a, { roughness: 0.85 }), frameMat = mat(0x202226, { roughness: 0.5, metalness: 0.4 });
   const cells = [], pickables = [];
   let num = 1;
@@ -1505,17 +1568,19 @@ window.GZ={"robot":"H4sIAAAAAAAC/1TdWXPyvJYF4P9ybt1Vygz0nYDMhEiEuasvmCTmIYAV0n++
     table.children.forEach(m => { m.castShadow = m.receiveShadow = true; });
     cell.beadParent = table;
     // подпись
-    const cv = labelCanvas(cell.name, 'idle'); cell.labelTex = new THREE.CanvasTexture(cv); cell.labelTex.encoding = THREE.sRGBEncoding;
-    const sp = new THREE.Sprite(new THREE.SpriteMaterial({ map: cell.labelTex, depthTest: false })); sp.scale.set(1.5, 1.5 * 160 / 512, 1); sp.renderOrder = 10; sp.position.set(0.3, 0, 3.55); g.add(sp);
+    cell.lcv = document.createElement('canvas'); cell.lcv.width = LW; cell.lcv.height = LH;
+    cell.labelTex = new THREE.CanvasTexture(cell.lcv); cell.labelTex.encoding = THREE.sRGBEncoding; cell.labelTex.anisotropy = 4;
+    const sp = new THREE.Sprite(new THREE.SpriteMaterial({ map: cell.labelTex, depthTest: false, transparent: true }));
+    sp.center.set(0.5, 0); sp.scale.set(1.15, 1.15 * LH / LW, 1); sp.renderOrder = 10; sp.position.set(0.3, 0, 3.45); g.add(sp);
     const ci = cells.length; g.traverse(o => { if (o.isMesh) { o.userData.cell = ci; pickables.push(o); } });
-    cells.push(cell); pose(cell); num++;
+    cells.push(cell); pose(cell); num++; setLabel(cell);
   }
   function pose(cell) {
     const L = links(cell.q);
     for (let i = 0; i < 7; i++) { cell.linkObjs[i].matrix.multiplyMatrices(L[i], MESH_ORIGIN[i]); cell.linkObjs[i].matrixWorldNeedsUpdate = true; }
     cell.toolObj.matrix.multiplyMatrices(L[6], TOOL0); cell.toolObj.matrixWorldNeedsUpdate = true;
   }
-  function setLabel(cell) { const cv = labelCanvas(cell.name, cell.state); cell.labelTex.image = cv; cell.labelTex.needsUpdate = true; }
+  function setLabel(cell) { drawLabel(cell); cell.labelTex.needsUpdate = true; cell._lk = labelKey(cell); }
   function setJob(cell, id) {
     if (cell.bead) { cell.beadParent.remove(cell.bead); cell.bead.geometry.dispose(); cell.bead = null; }
     cell.job = id ? ensureJob(JOBS[id]) : null; cell.s = 0; cell.state = 'idle';
@@ -1596,23 +1661,32 @@ window.GZ={"robot":"H4sIAAAAAAAC/1TdWXPyvJYF4P9ybt1Vygz0nYDMhEiEuasvmCTmIYAV0n++
   // ---- виды и камера ----
   const views = { iso: { p: K(-8, -30, 20), t: K(13.5, -8, 0.5) }, top: { p: K(13.5, -8.6, 46), t: K(13.5, -8.5, 0) }, aisle: { p: K(3.2, -21.5, 2.2), t: K(8.5, -4, 1.4) } };
   function setView(k) { const v = views[k]; camera.position.copy(v.p); controls.target.copy(v.t); controls.update(); }
-  // выбранный робот и шкала печати в строке подсказки (видны и когда подсказка свёрнута)
+  // общая статистика цеха в строке подсказки (видна и когда подсказка свёрнута): роботов в работе / ожидает / выключено и общая загрузка по времени
   let selCell = null;
   const fmtT = m => { const t = Math.max(0, Math.round(m)); return Math.floor(t / 60) + ':' + String(t % 60).padStart(2, '0'); };
-  function updSel() {
-    const nm = document.getElementById('selName'), fl = document.getElementById('selFill'), tm = document.getElementById('selTime');
-    const sst = document.getElementById('selSt');
-    if (!selCell) { sst.hidden = true; nm.textContent = 'Робот не выбран — щёлкните по роботу'; nm.className = 'none'; fl.style.width = '0'; fl.className = ''; tm.textContent = ''; return; }
-    const c = selCell, J = c.job, rs = robotStatus(c);
-    sst.hidden = false; sst.className = rs.k; sst.textContent = rs.t + (rs.d && rs.k !== 'off' ? ' · ' + rs.d : ''); sst.title = rs.d || rs.t;
-    nm.className = ''; nm.textContent = c.name + (J ? ' · ' + J.name : ' · нет кода');
-    if (!J) { fl.style.width = '0'; fl.className = ''; tm.textContent = 'код не выбран'; return; }
-    const f = Math.min(1, c.s / J.total);
-    fl.style.width = (f * 100).toFixed(1) + '%'; fl.className = f >= 1 ? 'done' : c.state === 'run' ? 'run' : c.state === 'pause' ? 'pause' : '';
-    tm.textContent = fmtT(f * J.minutes) + ' из ' + fmtT(J.minutes) + ' ч · ' + Math.floor(f * 100) + ' %';
+  function updStats() {
+    let run = 0, wait = 0, off = 0, tot = 0, done = 0, remSum = 0, remMax = 0, started = 0;
+    for (const c of cells) {
+      const k = robotStatus(c).k;
+      if (k === 'run') run++; else if (k === 'off') off++; else wait++;
+      const J = c.job;
+      if (J && (c.state === 'run' || c.state === 'pause' || (c.s > 0 && c.s < J.total - 1e-6))) {
+        const f = Math.min(1, c.s / J.total);
+        started++; tot += J.minutes; done += f * J.minutes; remSum += (1 - f) * J.minutes;
+        if (c.state === 'run') remMax = Math.max(remMax, (1 - f) * J.minutes);
+      }
+    }
+    document.getElementById('nRun').textContent = run; document.getElementById('nWait').textContent = wait; document.getElementById('nOff').textContent = off;
+    const fl = document.getElementById('shopFill'), tm = document.getElementById('shopTime'), bar = document.getElementById('shopBar');
+    const pct = tot ? done / tot : 0;
+    fl.style.width = (pct * 100).toFixed(1) + '%'; fl.className = run ? 'run' : tot ? 'pause' : '';
+    tm.textContent = !tot ? 'нет запущенных роботов' : 'загрузка ' + Math.floor(pct * 100) + ' % · ' + (run ? 'до конца ' + fmtT(remMax) + ' ч' : 'все на паузе');
+    const tip = !tot ? 'Загрузка цеха по времени: сейчас никто не печатает и нет начатых панелей.'
+      : 'Загрузка цеха по времени (реальное время печати, без ускорения показа). Роботов с начатой печатью: ' + started + '. Всего работы ' + fmtT(tot) + ' ч, сделано ' + fmtT(done) + ' ч, осталось ' + fmtT(remSum) + ' ч суммарно по роботам; последний печатающий робот закончит через ' + fmtT(remMax) + ' ч.';
+    bar.title = tm.title = tip;
   }
   function selectCell(cell) {
-    selCell = cell; updSel();
+    selCell = cell; updStats();
     cells.forEach(c => c.row.classList.toggle('sel', c === cell));
     cell.row.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
   }
@@ -1628,7 +1702,7 @@ window.GZ={"robot":"H4sIAAAAAAAC/1TdWXPyvJYF4P9ybt1Vygz0nYDMhEiEuasvmCTmIYAV0n++
     if (hit) selectCell(cells[hit.object.userData.cell]);
   });
   function focusCell(cell) {
-    selCell = cell; updSel();
+    selCell = cell; updStats();
     cells.forEach(c => c.row.classList.toggle('sel', c === cell));
     // кадр: робот высотой ~3,6 м вместе со столом (≈5,5 м в плане); расстояние считаем по углу обзора и форме окна, чтобы робот влезал целиком
     const t = K(cell.x + 1.5, cell.y, 1.7), tg = Math.tan(camera.fov * Math.PI / 360);
@@ -1678,7 +1752,7 @@ window.GZ={"robot":"H4sIAAAAAAAC/1TdWXPyvJYF4P9ybt1Vygz0nYDMhEiEuasvmCTmIYAV0n++
       if (c.s >= c.job.total) { c.s = c.job.total; c.state = 'idle'; setLabel(c); }
       update(c);
     }
-    if (uiT > 0.25) { uiT = 0; cells.forEach(refreshRow); updSel(); }
+    if (uiT > 0.25) { uiT = 0; cells.forEach(refreshRow); for (const c of cells) if (labelKey(c) !== c._lk) setLabel(c); updStats(); }
     controls.update(); renderer.render(scene, camera);
   })(last);
   window.__shop = { setView, focusCell, selectCell, cells };
