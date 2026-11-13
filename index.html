@@ -1267,6 +1267,7 @@ window.GZ={"robot":"H4sIAAAAAAAC/1TdWXPyvJYF4P9ybt1Vygz0nYDMhEiEuasvmCTmIYAV0n++
   document.querySelector('#panel h2').addEventListener('click', () => { if (mqM.matches && document.body.classList.contains('folded')) toggleList(); });
   if (mqM.addEventListener) mqM.addEventListener('change', syncFold);
   try { localStorage.removeItem('shopPclosed'); } catch (e) {}   // старое запомненное «скрыто» из прежних версий
+  if (mqM.matches) document.body.classList.add('folded');         // на телефоне нижняя панель при открытии свёрнута
   syncFold();
 
   const world = new THREE.Group(); world.rotation.x = -Math.PI / 2; scene.add(world);
@@ -1795,7 +1796,7 @@ window.GZ={"robot":"H4sIAAAAAAAC/1TdWXPyvJYF4P9ybt1Vygz0nYDMhEiEuasvmCTmIYAV0n++
   // стартовый вид: взгляд на цех от правого переднего угла, чтобы были видны почти все роботы (на узком экране — подальше)
   focusCell(cells[12]);
   camera.position.copy(K(23.9, -23.2, 6.4)); controls.target.copy(K(12.9, -9.6, 0.1)); controls.update();
-  if (camera.aspect < 1) { camera.position.sub(controls.target).multiplyScalar(1.5).add(controls.target); controls.update(); }
+  if (camera.aspect < 1) { camera.position.copy(K(31.5, -32.5, 10.5)); controls.update(); }   // телефон: камера дальше и выше, чтобы цех влез в узкий кадр
   { const m = location.hash.match(/p=([-\d.,]+)&t=([-\d.,]+)/);
     if (m) { const P = m[1].split(',').map(Number), T = m[2].split(',').map(Number); if (P.length === 3 && T.length === 3 && P.concat(T).every(isFinite)) { camera.position.copy(K(P[0], P[1], P[2])); controls.target.copy(K(T[0], T[1], T[2])); controls.update(); } } }
 
