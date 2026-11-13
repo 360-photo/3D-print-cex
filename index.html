@@ -1788,9 +1788,10 @@ window.GZ={"robot":"H4sIAAAAAAAC/1TdWXPyvJYF4P9ybt1Vygz0nYDMhEiEuasvmCTmIYAV0n++
   // стартовая сцена: три робота печатают
   const START = [[13, '92', 0.35], [7, '100', 0.6], [19, '90', 0.15], [3, '99', 0.0]];
   for (const [n, id, frac] of START) { const c = cells[n - 1]; if (!JOBS[id]) continue; setJob(c, id); c.s = c.job.total * frac; c.state = n === 3 ? 'idle' : 'run'; update(c); setLabel(c); refreshRow(c); }
-  // стартовый вид: от робота РТК-13 камера отодвинута, чтобы был виден весь цех (на узком экране — ещё дальше)
+  // стартовый вид: взгляд на цех от правого переднего угла, чтобы были видны почти все роботы (на узком экране — подальше)
   focusCell(cells[12]);
-  camera.position.sub(controls.target).multiplyScalar(camera.aspect < 1 ? 2.1 : 2.4).add(controls.target); controls.update();
+  camera.position.copy(K(24, -23, 6.5)); controls.target.copy(K(11, -6, 1)); controls.update();
+  if (camera.aspect < 1) { camera.position.sub(controls.target).multiplyScalar(1.5).add(controls.target); controls.update(); }
   { const m = location.hash.match(/p=([-\d.,]+)&t=([-\d.,]+)/);
     if (m) { const P = m[1].split(',').map(Number), T = m[2].split(',').map(Number); if (P.length === 3 && T.length === 3 && P.concat(T).every(isFinite)) { camera.position.copy(K(P[0], P[1], P[2])); controls.target.copy(K(T[0], T[1], T[2])); controls.update(); } } }
 
